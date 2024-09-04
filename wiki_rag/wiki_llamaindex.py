@@ -55,15 +55,17 @@ def updateSettings():
 
 def main():
     global query_engine
-    print(color("loading...", bcolors.OKBLUE))
+    print(color("Starting...", bcolors.OKBLUE))
 
     PERSIST_DIR = "./index_storage"
 
     if not os.path.exists(PERSIST_DIR):
+        print(color("Generating Index...", bcolors.OKBLUE))
         documents = SimpleDirectoryReader("glados_knowledge").load_data()
         index = VectorStoreIndex.from_documents(documents)
         index.storage_context.persist(persist_dir=PERSIST_DIR)
     else:
+        print(color("Loading Index...", bcolors.OKBLUE))
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
         index = load_index_from_storage(storage_context)
 
