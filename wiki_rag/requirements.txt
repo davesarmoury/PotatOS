@@ -1,0 +1,7 @@
+beautifulsoup4
+Flask
+flask_cors
+html2text
+llama_index
+Requests
+tqdm
