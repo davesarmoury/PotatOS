@@ -1,0 +1,3 @@
+[submodule "GLaDOS"]
+	path = GLaDOS
+	url = git@github.com:davesarmoury/GLaDOS.git
