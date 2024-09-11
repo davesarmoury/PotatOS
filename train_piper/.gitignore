@@ -1,0 +1,5 @@
+dataset_dir
+*.ckpt
+piper_venv
+training_dir
+test_audio
