@@ -1,3 +1,6 @@
 [submodule "GLaDOS"]
 	path = GLaDOS
 	url = git@github.com:davesarmoury/GLaDOS.git
+[submodule "train_piper/piper"]
+	path = train_piper/piper
+	url = git@github.com:rhasspy/piper.git
