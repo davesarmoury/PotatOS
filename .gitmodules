@@ -4,3 +4,6 @@
 [submodule "train_piper/piper"]
 	path = train_piper/piper
 	url = git@github.com:rhasspy/piper.git
+[submodule "jetson-containers"]
+	path = jetson-containers
+	url = git@github.com:dusty-nv/jetson-containers.git

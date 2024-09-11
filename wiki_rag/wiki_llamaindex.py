@@ -5,6 +5,7 @@ from llama_index.core import (
     StorageContext,
     load_index_from_storage,
 )
+from llama_index.llms.ollama import Ollama
 
 from flask import Flask
 from flask import request
@@ -44,32 +45,34 @@ def hello_world():
 
 @app.route("/chat")
 def updateSettings():
-    global query_engine
+    global chat_engine
     query = request.args.get("query")
 
     print("Q < " + query + " >")
-    response = query_engine.query(msg + query)
+    response = chat_engine.chat(msg + query)
     print("A < " + str(response) + " >")
 
     return str(response)
 
 def main():
-    global query_engine
+    global chat_engine
     print(color("Starting...", bcolors.OKBLUE))
+
+    llm = Ollama(model="llama3", request_timeout=60.0)
 
     PERSIST_DIR = "./index_storage"
 
     if not os.path.exists(PERSIST_DIR):
         print(color("Generating Index...", bcolors.OKBLUE))
         documents = SimpleDirectoryReader("glados_knowledge").load_data()
-        index = VectorStoreIndex.from_documents(documents)
+        index = VectorStoreIndex.from_documents(documents, llm=llm)
         index.storage_context.persist(persist_dir=PERSIST_DIR)
     else:
         print(color("Loading Index...", bcolors.OKBLUE))
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
-        index = load_index_from_storage(storage_context)
+        index = load_index_from_storage(storage_context, llm=llm)
 
-    query_engine = index.as_query_engine()
+    chat_engine = index.as_chat_engine()
     print(color("We do what we must, because we can...", bcolors.OKGREEN))
 
     app.run("0.0.0.0")
