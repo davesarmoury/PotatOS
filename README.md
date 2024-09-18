@@ -30,3 +30,9 @@ On the jetson, put the onnx and onnx.json files into jetson-containers/data/mode
 Run a quick test with
 
     curl -G --data-urlencode 'text=I like big butts, I cannot lie.' --output - 'localhost:5001' | aplay
+
+## Audio
+
+See [https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-audio](https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-audio), then pair a bluetooth speaker with bluetoothctl.  Then set the volume
+
+    amixer -D pulse sset Master 50%
