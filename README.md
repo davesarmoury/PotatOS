@@ -9,7 +9,7 @@
 ## LLM
 
     jetson-containers run --name ollama $(autotag ollama)
-    ollama run gemma:2b
+    ollama run gemma:2b --keepalive 60m
 
 ## RAG Server
 
