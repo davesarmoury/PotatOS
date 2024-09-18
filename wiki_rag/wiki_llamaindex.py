@@ -4,12 +4,20 @@ from llama_index.core import (
     SimpleDirectoryReader,
     StorageContext,
     load_index_from_storage,
+    Settings,
 )
+
 from llama_index.llms.ollama import Ollama
+from llama_index.embeddings.ollama import OllamaEmbedding
 
 from flask import Flask
 from flask import request
 from flask_cors import CORS
+
+model_name = "gemma:2b"
+root_dir = "~/ws/potato_ws/src/PotatOS/wiki_rag/"
+PERSIST_DIR = root_dir + "index_storage"
+KNOWLEDGE_DIR = root_dir + "glados_knowledge"
 
 app = Flask(__name__)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
@@ -58,19 +66,17 @@ def main():
     global chat_engine
     print(color("Starting...", bcolors.OKBLUE))
 
-    llm = Ollama(model="llama3", request_timeout=60.0)
-
-    PERSIST_DIR = "./index_storage"
+    llm = Ollama(model=model_name, request_timeout=60.0)
 
     if not os.path.exists(PERSIST_DIR):
         print(color("Generating Index...", bcolors.OKBLUE))
-        documents = SimpleDirectoryReader("glados_knowledge").load_data()
-        index = VectorStoreIndex.from_documents(documents, llm=llm)
+        documents = SimpleDirectoryReader(KNOWLEDGE_DIR).load_data()
+        index = VectorStoreIndex.from_documents(documents, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
         index.storage_context.persist(persist_dir=PERSIST_DIR)
     else:
         print(color("Loading Index...", bcolors.OKBLUE))
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
-        index = load_index_from_storage(storage_context, llm=llm)
+        index = load_index_from_storage(storage_context, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
 
     chat_engine = index.as_chat_engine()
     print(color("We do what we must, because we can...", bcolors.OKGREEN))

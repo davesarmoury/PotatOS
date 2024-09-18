@@ -2,6 +2,8 @@ beautifulsoup4
 Flask
 flask_cors
 html2text
-llama_index
+llama-index
+llama-index-llms-ollama
+llama-index-embeddings-ollama
 Requests
 tqdm
