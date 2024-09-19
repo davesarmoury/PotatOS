@@ -7,3 +7,6 @@
 [submodule "jetson-containers"]
 	path = jetson-containers
 	url = git@github.com:dusty-nv/jetson-containers.git
+[submodule "vosk-server"]
+	path = vosk-server
+	url = https://github.com/alphacep/vosk-server
