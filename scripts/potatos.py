@@ -10,6 +10,12 @@ import websockets
 import logging
 import sounddevice as sd
 import argparse
+import subprocess
+import urllib.parse
+import requests
+
+piper_url = "localhost:5001"
+rag_url = "http://localhost:5000/chat?query="
 
 def int_or_str(text):
     """Helper function for argument parsing."""
@@ -33,11 +39,32 @@ async def run_test():
             while True:
                 data = await audio_queue.get()
                 await websocket.send(data)
-#                print (await websocket.recv())
+
                 rec = await websocket.recv()
                 rec = json.loads(rec)
+
                 if "text" in rec.keys():
-                    print(rec["text"])
+                    asr_in = rec["text"].rstrip().lstrip()
+
+                    if len(asr_in) > 2:
+                        print("-------------")
+                        print(asr_in)
+
+                        os.system("pactl set-source-mute 0 on")
+
+
+                        query_url = rag_url + urllib.parse.quote_plus(asr_in)
+                        r = requests.get(query_url)
+
+                        response = str(r.text)
+                        response = response.replace("2", " too ").replace("C-3PO", "see threepio")
+
+                        print(response)
+
+                        ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
+                        aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
+
+                        os.system("pactl set-source-mute 0 off")
 
             await websocket.send('{"eof" : 1}')
             print (await websocket.recv())
