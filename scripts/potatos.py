@@ -17,6 +17,22 @@ import requests
 piper_url = "localhost:5001"
 rag_url = "http://localhost:5000/chat?query="
 
+def mute():
+    os.system("pactl set-source-mute 0 on 2> /dev/null")
+    os.system("pactl set-source-mute 1 on 2> /dev/null")
+    os.system("pactl set-source-mute 2 on 2> /dev/null")
+    os.system("pactl set-source-mute 3 on 2> /dev/null")
+    os.system("pactl set-source-mute 4 on 2> /dev/null")
+    os.system("pactl set-source-mute 5 on 2> /dev/null")
+
+def unmute():
+    os.system("pactl set-source-mute 0 off 2> /dev/null")
+    os.system("pactl set-source-mute 1 off 2> /dev/null")
+    os.system("pactl set-source-mute 2 off 2> /dev/null")
+    os.system("pactl set-source-mute 3 off 2> /dev/null")
+    os.system("pactl set-source-mute 4 off 2> /dev/null")
+    os.system("pactl set-source-mute 5 off 2> /dev/null")
+
 def int_or_str(text):
     """Helper function for argument parsing."""
     try:
@@ -29,8 +45,8 @@ def callback(indata, frames, time, status):
     loop.call_soon_threadsafe(audio_queue.put_nowait, bytes(indata))
 
 async def run_test():
-
-    with sd.RawInputStream(samplerate=args.samplerate, blocksize = 4000, device=args.device, dtype='int16',
+    unmute()
+    with sd.RawInputStream(samplerate=args.samplerate, blocksize = 4096, device=args.device, dtype='int16',
                            channels=1, callback=callback) as device:
 
         async with websockets.connect(args.uri) as websocket:
@@ -41,30 +57,29 @@ async def run_test():
                 await websocket.send(data)
 
                 rec = await websocket.recv()
-                rec = json.loads(rec)
+                rec2 = json.loads(rec)
 
-                if "text" in rec.keys():
-                    asr_in = rec["text"].rstrip().lstrip()
+                if "text" in rec2.keys():
+                    asr_in = rec2["text"].strip()
+
+                    print("-------------")
 
                     if len(asr_in) > 2:
-                        print("-------------")
-                        print(asr_in)
+                        mute()
 
-                        os.system("pactl set-source-mute 0 on")
-
-
+                        response = asr_in
                         query_url = rag_url + urllib.parse.quote_plus(asr_in)
                         r = requests.get(query_url)
 
                         response = str(r.text)
-                        response = response.replace("2", " too ").replace("C-3PO", "see threepio")
+                        response = response.replace("GLaDOS", "glados")
 
                         print(response)
 
-                        ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
-                        aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
+#                        ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
+#                        aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
 
-                        os.system("pactl set-source-mute 0 off")
+                        unmute()
 
             await websocket.send('{"eof" : 1}')
             print (await websocket.recv())
