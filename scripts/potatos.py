@@ -62,9 +62,10 @@ async def run_test():
                 if "text" in rec2.keys():
                     asr_in = rec2["text"].strip()
 
-                    print("-------------")
-
                     if len(asr_in) > 2:
+                        print("-------------")
+                        print(asr_in)
+
                         mute()
 
                         response = asr_in
@@ -76,8 +77,8 @@ async def run_test():
 
                         print(response)
 
-#                        ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
-#                        aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
+                        ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
+                        aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
 
                         unmute()
 

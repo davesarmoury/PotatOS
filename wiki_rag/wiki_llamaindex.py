@@ -15,7 +15,7 @@ from flask import request
 from flask_cors import CORS
 
 model_name = "gemma:2b"
-root_dir = "~/ws/potato_ws/src/PotatOS/wiki_rag/"
+root_dir = "/home/davesarmoury/ws/potato_ws/src/PotatOS/wiki_rag/"
 PERSIST_DIR = root_dir + "index_storage"
 KNOWLEDGE_DIR = root_dir + "glados_knowledge"
 
@@ -28,7 +28,7 @@ from llama_index.core import PromptTemplate
 msg = (
     "We have provided context information below. \n"
     "---------------------\n"
-    "You are an artificial intelligenced named GLaDOS.  Your responses should be very concise and specific"
+    "You are an artificial intelligenced named GLaDOS.  Your responses should be very concise and specific.  Everyone else is dumber than you and you can inform them of this or dismiss them completely."
     "\n---------------------\n"
     "Given this information, please answer the question: "
 )
