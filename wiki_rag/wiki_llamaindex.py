@@ -9,12 +9,13 @@ from llama_index.core import (
 
 from llama_index.llms.ollama import Ollama
 from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.core.memory import ChatMemoryBuffer
 
 from flask import Flask
 from flask import request
 from flask_cors import CORS
 
-model_name = "gemma:2b"
+model_name = "llama3.2:3b"
 root_dir = "/home/davesarmoury/ws/potato_ws/src/PotatOS/wiki_rag/"
 PERSIST_DIR = root_dir + "index_storage"
 KNOWLEDGE_DIR = root_dir + "glados_knowledge"
@@ -22,16 +23,6 @@ KNOWLEDGE_DIR = root_dir + "glados_knowledge"
 app = Flask(__name__)
 cors = CORS(app, resources={r"*": {"origins": "*"}})
 app.config['CORS_HEADERS'] = 'Content-Type'
-
-from llama_index.core import PromptTemplate
-
-msg = (
-    "We have provided context information below. \n"
-    "---------------------\n"
-    "You are an artificial intelligenced named GLaDOS.  Your responses should be very concise and specific.  Everyone else is dumber than you and you can inform them of this or dismiss them completely."
-    "\n---------------------\n"
-    "Given this information, please answer the question: "
-)
 
 class bcolors:
     HEADER = '\033[95m'
@@ -57,16 +48,33 @@ def updateSettings():
     query = request.args.get("query")
 
     print("Q < " + query + " >")
-    response = chat_engine.chat(msg + query)
+    response = chat_engine.chat(query)
     print("A < " + str(response) + " >")
 
     return str(response)
 
+def load_persona(fn="persona.txt"):
+    inFile = open(fn, 'r')
+
+    persona = ""
+
+    for i in inFile:
+        if len(i) > 3 and "#" not in i:
+            persona = persona + i
+
+    inFile.close()
+
+    return persona
+
 def main():
     global chat_engine
-    print(color("Starting...", bcolors.OKBLUE))
+    print(color("Loading LLM...", bcolors.OKBLUE))
 
     llm = Ollama(model=model_name, request_timeout=60.0)
+    memory = ChatMemoryBuffer.from_defaults(token_limit=1500, llm=llm)
+
+    print(color("Loading Persona...", bcolors.OKBLUE))
+    persona = load_persona()
 
     if not os.path.exists(PERSIST_DIR):
         print(color("Generating Index...", bcolors.OKBLUE))
@@ -78,7 +86,12 @@ def main():
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
         index = load_index_from_storage(storage_context, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
 
-    chat_engine = index.as_chat_engine()
+    chat_engine = index.as_chat_engine(
+#      chat_mode="context",
+      memory=memory,
+      system_prompt=persona,
+    )
+
     print(color("We do what we must, because we can...", bcolors.OKGREEN))
 
     app.run("0.0.0.0")
