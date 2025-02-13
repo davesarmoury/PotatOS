@@ -12,7 +12,7 @@
 ## LLM
 
     jetson-containers run --name ollama $(autotag ollama)
-    ollama run gemma:2b --keepalive 60m
+    ollama run llama3.2:3b --keepalive 60m
 
 ## RAG Server
 
@@ -46,6 +46,10 @@ See [https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-
 Train or download the GLaDOS Piper voice.  See [train_piper](train_piper) for more details
 
 On the jetson, put the onnx and onnx.json files into jetson-containers/data/models/piper, then run the command below
+
+    cd jetson-containers/data/models/piper/
+    wget https://huggingface.co/DavesArmoury/GLaDOS_TTS/resolve/main/glados_piper_medium.onnx.json
+    wget https://huggingface.co/DavesArmoury/GLaDOS_TTS/resolve/main/glados_piper_medium.onnx
 
     jetson-containers run $(autotag piper-tts) python3 -m piper.http_server --port 5001 -m /data/models/piper/glados_piper_medium.onnx
 
