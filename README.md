@@ -37,6 +37,7 @@ See [https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-
     cd vosk-server/websocket
     wget https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip
     unzip vosk-model-small-en-us-0.15
+    rm vosk-model-small-en-us-0.15.zip
     mv vosk-model-small-en-us-0.15 model
 
     python3 asr_server.py
@@ -56,3 +57,8 @@ On the jetson, put the onnx and onnx.json files into jetson-containers/data/mode
 Run a quick test with
 
     curl -G --data-urlencode 'text=I like big butts, I cannot lie.' --output - 'localhost:5001' | aplay
+
+## Coordinator
+
+    python3 potatos.py -r 44100 -d 0
+

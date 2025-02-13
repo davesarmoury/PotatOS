@@ -87,7 +87,8 @@ def main():
         index = load_index_from_storage(storage_context, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
 
     chat_engine = index.as_chat_engine(
-#      chat_mode="context",
+      chat_mode="context",
+      llm=llm,
       memory=memory,
       system_prompt=persona,
     )
