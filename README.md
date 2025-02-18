@@ -16,7 +16,7 @@
 
 ## RAG Server
 
-    cd Potatos/wiki_rag/
+    cd wiki_rag/
     pip3 install -r requirements.txt
 
     python3 wiki_llamaindex_preprocess.py
@@ -25,6 +25,9 @@
 ## Audio
 
 See [https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-audio](https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-audio), then pair a bluetooth speaker with bluetoothctl.  Then set the volume
+
+    sudo nano /lib/systemd/system/bluetooth.service.d/nv-bluetooth-service.conf
+
 
     amixer -D pulse sset Master 50%
 
@@ -44,14 +47,15 @@ See [https://developer.nvidia.com/embedded/learn/tutorials/connecting-bluetooth-
 
 ## Run Piper Server
 
-Train or download the GLaDOS Piper voice.  See [train_piper](train_piper) for more details
-
-On the jetson, put the onnx and onnx.json files into jetson-containers/data/models/piper, then run the command below
+Train or download the GLaDOS Piper voice.  See [train_piper](train_piper) for more details.  If you don't want to train you own, you can download pre-trained models using
 
     cd jetson-containers/data/models/piper/
     wget https://huggingface.co/DavesArmoury/GLaDOS_TTS/resolve/main/glados_piper_medium.onnx.json
     wget https://huggingface.co/DavesArmoury/GLaDOS_TTS/resolve/main/glados_piper_medium.onnx
 
+On the jetson, put the onnx and onnx.json files into jetson-containers/data/models/piper, then run the command below
+
+    docker pull dustynv/piper-tts:r36.2.0
     jetson-containers run $(autotag piper-tts) python3 -m piper.http_server --port 5001 -m /data/models/piper/glados_piper_medium.onnx
 
 Run a quick test with

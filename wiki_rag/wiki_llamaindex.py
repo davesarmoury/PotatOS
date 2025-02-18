@@ -16,7 +16,7 @@ from flask import request
 from flask_cors import CORS
 
 model_name = "llama3.2:3b"
-root_dir = "/home/davesarmoury/ws/potato_ws/src/PotatOS/wiki_rag/"
+root_dir = "/home/davesarmoury/PotatOS/wiki_rag/"
 PERSIST_DIR = root_dir + "index_storage"
 KNOWLEDGE_DIR = root_dir + "glados_knowledge"
 
@@ -43,7 +43,7 @@ def hello_world():
     return 'Hello, World!'
 
 @app.route("/chat")
-def updateSettings():
+def chat():
     global chat_engine
     query = request.args.get("query")
 
