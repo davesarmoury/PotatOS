@@ -13,6 +13,13 @@ import argparse
 import subprocess
 import urllib.parse
 import requests
+import time
+import board
+import neopixel_spi as neopixel
+
+NUM_PIXELS = 3
+PIXEL_ORDER = neopixel.RGB
+COLORS = {"OFF": 0x000000, "IDLE": 0xFF0000, "EYE": 0xFF9999, "THINKING": 0x66B2FF, "SPEAKING": 0x66FF66, "ERROR": 0xFF33FF, "LISTENING": 0xFF0000, "MUTED": 0x00FF00}
 
 piper_url = "localhost:5001"
 rag_url = "http://localhost:5000/chat?query="
@@ -44,8 +51,17 @@ def callback(indata, frames, time, status):
     """This is called (from a separate thread) for each audio block."""
     loop.call_soon_threadsafe(audio_queue.put_nowait, bytes(indata))
 
+def set_pixels(pixels, vals=[COLORS["ERROR"], COLORS["ERROR"], COLORS["ERROR"]]):
+    for i in range(NUM_PIXELS):
+        pixels[i] = vals[i]
+
+    pixels.show()
+
 async def run_test():
+    global pixels
+
     unmute()
+
     with sd.RawInputStream(samplerate=args.samplerate, blocksize = 4096, device=args.device, dtype='int16',
                            channels=1, callback=callback) as device:
 
@@ -53,6 +69,8 @@ async def run_test():
             await websocket.send('{ "config" : { "sample_rate" : %d } }' % (device.samplerate))
 
             while True:
+                set_pixels(pixels, [COLORS["EYE"], COLORS["IDLE"], COLORS["LISTENING"]])
+
                 data = await audio_queue.get()
                 await websocket.send(data)
 
@@ -63,6 +81,7 @@ async def run_test():
                     asr_in = rec2["text"].strip()
 
                     if len(asr_in) > 2:
+                        set_pixels(pixels, [COLORS["EYE"], COLORS["THINKING"], COLORS["MUTED"]])
                         print("-------------")
                         print(asr_in)
 
@@ -76,20 +95,23 @@ async def run_test():
                         response = response.replace("GLaDOS", "glados")
 
                         print(response)
+                        set_pixels(pixels, [COLORS["EYE"], COLORS["SPEAKING"], COLORS["MUTED"]])
 
                         ps = subprocess.run(["curl", "-sG", "--data-urlencode", "text=\"" + response.strip() + "\"", "--output", "-", piper_url], check=True, capture_output=True)
                         aplay = subprocess.run(['aplay', '-q'], input=ps.stdout, capture_output=True)
 
                         unmute()
 
+                        set_pixels(pixels, [COLORS["EYE"], COLORS["IDLE"], COLORS["LISTENING"]])
+
             await websocket.send('{"eof" : 1}')
             print (await websocket.recv())
 
 async def main():
-
     global args
     global loop
     global audio_queue
+    global pixels
 
     parser = argparse.ArgumentParser(add_help=False)
     parser.add_argument('-l', '--list-devices', action='store_true',
@@ -98,6 +120,14 @@ async def main():
     if args.list_devices:
         print(sd.query_devices())
         parser.exit(0)
+
+    spi = board.SPI()
+
+    pixels = neopixel.NeoPixel_SPI(
+        spi, NUM_PIXELS, pixel_order=PIXEL_ORDER, auto_write=False
+    )
+
+    set_pixels(pixels)
 
     parser = argparse.ArgumentParser(description="ASR Server",
                                      formatter_class=argparse.RawDescriptionHelpFormatter,
