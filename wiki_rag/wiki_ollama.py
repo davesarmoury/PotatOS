@@ -31,6 +31,11 @@ def color(text, color):
 def hello_world():
     return 'Hello, World!'
 
+def log(data):
+    outFile = open("log.txt", 'a+')
+    outFile.write(data + "\n")
+    outFile.close()
+
 @app.route("/chat")
 def chat():
     global system_prompt, message_history, max_history
@@ -39,6 +44,9 @@ def chat():
 
     print("--------------------")
     print(color(query, bcolors.OKBLUE))
+
+    log("--------------------")
+    log(query)
 
     prompt = []
     prompt.append(system_prompt)
@@ -50,8 +58,10 @@ def chat():
 
     response = ollama.chat(model=model_name, messages=prompt)
 
-    r_text = str(response['message']['content'])
+    r_text = str(response['message']['content']).encode('ascii', 'ignore').decode('ascii')
     print(color(r_text, bcolors.OKGREEN))
+
+    log(r_text)
 
     message_history.append({
        'role': 'assistant',
@@ -60,8 +70,6 @@ def chat():
 
     while len(message_history) > max_history:
         message_history.pop(0)
-
-    print(color(str(message_history), bcolors.OKCYAN))
 
     return r_text
 

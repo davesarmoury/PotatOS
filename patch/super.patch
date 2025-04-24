@@ -1,0 +1,10 @@
+--- /home/davesarmoury/.local/lib/python3.10/site-packages/adafruit_platformdetect/constants/boards.py.bkp	2025-04-24 11:49:55.220182667 -0400
++++ /home/davesarmoury/.local/lib/python3.10/site-packages/adafruit_platformdetect/constants/boards.py	2025-04-24 11:05:00.394440878 -0400
+@@ -408,6 +408,7 @@
+             "nvidia,p3768-0000+p3767-0004",
+             "nvidia,p3509-0000+p3767-0005",
+             "nvidia,p3768-0000+p3767-0005",
++            "nvidia,p3768-0000+p3767-0005-super",
+         ),
+     ),
+ )

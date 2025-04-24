@@ -5,6 +5,13 @@
     git clone --recursive git@github.com:davesarmoury/PotatOS.git
     cd PotatOS
 
+    pip3 install -r requirements.txt
+    sudo groupadd -f -r gpio
+    sudo usermod -a -G $USER
+
+    sudo cp lib/python/Jetson/GPIO/99-gpio.rules /etc/udev/rules.d/
+    #sudo reboot
+
 ## Jetson Containers
 
     bash jetson-containers/install.sh
@@ -19,8 +26,9 @@
     cd wiki_rag/
     pip3 install -r requirements.txt
 
-    python3 wiki_llamaindex_preprocess.py
-    python3 wiki_llamaindex.py
+    #python3 wiki_llamaindex_preprocess.py
+    #python3 wiki_llamaindex.py
+    python3 wiki_ollama.py
 
 ## Audio
 
