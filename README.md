@@ -16,6 +16,12 @@
 
     bash jetson-containers/install.sh
 
+## Patch platform detect (optional)
+
+    cd patch/
+    ./patch_platformdetect.sh
+    cd ..
+
 ## LLM
 
     jetson-containers run --name ollama $(autotag ollama)
