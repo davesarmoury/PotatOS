@@ -18,7 +18,7 @@
 
     sudo apt install espeak-ng
     ./build_monotonic_align.sh 
-    cd ..
+    cd ../../..
 
 ## Download Dataset
 
