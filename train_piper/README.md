@@ -24,6 +24,8 @@
 
     pip3 install -r requirements.txt
     python3 download_glados.py 
+    mv dataset_dir/manifest.csv dataset_dir/metadata.csv
+
     python3 -m piper_train.preprocess   --language en-us   --input-dir dataset_dir/   --output-dir training_dir   --dataset-format ljspeech   --single-speaker   --sample-rate 22050
 
 ## Train Network
