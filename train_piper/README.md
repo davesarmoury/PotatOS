@@ -1,6 +1,6 @@
 # GLaDOS with Piper
 
-Tested working with (Cuda 11.8)[https://developer.nvidia.com/cuda-11-8-0-download-archive]
+Tested working with [Cuda 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive)
 
 ## Install Piper
 
