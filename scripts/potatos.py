@@ -30,20 +30,12 @@ piper_url = "localhost:5001"
 rag_url = "http://localhost:5000/chat?query="
 
 def mute():
-    os.system("pactl set-source-mute 0 on 2> /dev/null")
-    os.system("pactl set-source-mute 1 on 2> /dev/null")
-    os.system("pactl set-source-mute 2 on 2> /dev/null")
-    os.system("pactl set-source-mute 3 on 2> /dev/null")
-    os.system("pactl set-source-mute 4 on 2> /dev/null")
-    os.system("pactl set-source-mute 5 on 2> /dev/null")
+    for i in range(20):
+        os.system("pactl set-source-mute " + str(i) + " on 2> /dev/null")
 
 def unmute():
-    os.system("pactl set-source-mute 0 off 2> /dev/null")
-    os.system("pactl set-source-mute 1 off 2> /dev/null")
-    os.system("pactl set-source-mute 2 off 2> /dev/null")
-    os.system("pactl set-source-mute 3 off 2> /dev/null")
-    os.system("pactl set-source-mute 4 off 2> /dev/null")
-    os.system("pactl set-source-mute 5 off 2> /dev/null")
+    for i in range(20):
+        os.system("pactl set-source-mute " + str(i) + " off 2> /dev/null")
 
 def int_or_str(text):
     """Helper function for argument parsing."""

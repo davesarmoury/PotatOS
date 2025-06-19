@@ -80,3 +80,8 @@ Run a quick test with
 
     python3 potatos.py -r 44100 -d 0
 
+## PulseAudio Quirk
+
+PulseAudio will automatically disconnect when no one is logged into the machine.  That means if you are trying to run it headless, your audio will break.  This is gross, but just ssh the terminal into itself so the machine sees a "remote" connection
+
+    ssh localhost
