@@ -1,5 +1,7 @@
 # GLaDOS with Piper
 
+Tested working with [Cuda 11.8](https://developer.nvidia.com/cuda-11-8-0-download-archive)
+
 ## Install Piper
 
     sudo apt install python3-dev
@@ -9,21 +11,23 @@
     cd piper/src/python
 
     pip3 install --upgrade wheel setuptools
-    pip3 install 'pytorch-lightning'
 
     pip3 install pip==24.0
+    pip3 install 'pytorch-lightning'==1.7.0
     pip3 install numpy==1.26.4
     pip3 install torchmetrics==0.11.4
     pip3 install -e .
 
     sudo apt install espeak-ng
     ./build_monotonic_align.sh 
-    cd ..
+    cd ../../..
 
 ## Download Dataset
 
     pip3 install -r requirements.txt
     python3 download_glados.py 
+    mv dataset_dir/manifest.csv dataset_dir/metadata.csv
+
     python3 -m piper_train.preprocess   --language en-us   --input-dir dataset_dir/   --output-dir training_dir   --dataset-format ljspeech   --single-speaker   --sample-rate 22050
 
 ## Train Network
