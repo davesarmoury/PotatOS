@@ -17,6 +17,28 @@ import time
 import board
 import neopixel_spi as neopixel
 
+# Load configuration file
+def load_config():
+    config_path = "../config.json"
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    else:
+        # Default settings
+        return {
+            "jetson": {
+                "ip": "localhost",
+                "rag_port": 5000,
+                "piper_port": 5001
+            },
+            "vosk": {
+                "host": "localhost",
+                "port": 2700
+            }
+        }
+
+config = load_config()
+
 NUM_PIXELS = 3
 PIXEL_ORDER = neopixel.RGB
 ERROR = 0x00FFFF
@@ -26,8 +48,13 @@ RED = 0x00FF00
 EYE = 0xF0F00F
 MUTED = 0xFF7700
 
-piper_url = "localhost:5001"
-rag_url = "http://localhost:5000/chat?query="
+# Create URLs from configuration
+JETSON_IP = config["jetson"]["ip"]
+RAG_PORT = config["jetson"]["rag_port"]
+PIPER_PORT = config["jetson"]["piper_port"]
+
+piper_url = f"{JETSON_IP}:{PIPER_PORT}"
+rag_url = f"http://{JETSON_IP}:{RAG_PORT}/chat?query="
 
 def mute():
     for i in range(20):

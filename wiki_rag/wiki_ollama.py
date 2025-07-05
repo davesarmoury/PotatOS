@@ -1,4 +1,5 @@
 import os.path
+import json
 
 import ollama
 
@@ -6,7 +7,28 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 
-model_name = "llama3.2:3b"
+# Load configuration file
+def load_config():
+    config_path = "../config.json"
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    else:
+        # Default settings
+        return {
+            "ollama": {
+                "host": "192.168.1.100",
+                "port": 11434,
+                "model": "llama3.2:3b"
+            }
+        }
+
+config = load_config()
+
+# Ollama server settings
+OLLAMA_HOST = config["ollama"]["host"]
+OLLAMA_PORT = config["ollama"]["port"]
+model_name = config["ollama"]["model"]
 max_history = 3
 
 app = Flask(__name__)
@@ -56,7 +78,9 @@ def chat():
            'content': query
        })
 
-    response = ollama.chat(model=model_name, messages=prompt)
+    # Connect to network Ollama server
+    client = ollama.Client(host=f"http://{OLLAMA_HOST}:{OLLAMA_PORT}")
+    response = client.chat(model=model_name, messages=prompt)
 
     r_text = str(response['message']['content']).encode('ascii', 'ignore').decode('ascii')
     print(color(r_text, bcolors.OKGREEN))
@@ -99,8 +123,10 @@ def main():
 
     print(color("Loading LLM...", bcolors.OKBLUE))
 
+    # Configure Ollama client
+    client = ollama.Client(host=f"http://{OLLAMA_HOST}:{OLLAMA_PORT}")
 
-    response = ollama.chat(model=model_name, messages=[
+    response = client.chat(model=model_name, messages=[
         system_prompt,
        {
            'role': 'user',

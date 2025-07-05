@@ -1,0 +1,19 @@
+{
+  "ollama": {
+    "host": "192.168.1.100",
+    "port": 11434,
+    "model": "llama3.2:3b"
+  },
+  "jetson": {
+    "ip": "192.168.1.101",
+    "rag_port": 5000,
+    "piper_port": 5001
+  },
+  "vosk": {
+    "host": "localhost",
+    "port": 2700
+  },
+  "audio": {
+    "sample_rate": 16000
+  }
+}

@@ -1,5 +1,24 @@
 # PotatOS
 
+## Network Setup
+
+The PotatOS system consists of components running on different devices:
+
+1. **Ollama Server** (On your powerful computer)
+2. **RAG Server** (On Jetson device)
+3. **Main Coordinator** (On Jetson device)
+
+### Quick Setup
+
+1. Update IP addresses in **config.json** file
+2. **On your computer**: Run `start_ollama_server.bat` (Windows) or `start_ollama_server.sh` (Linux/Mac)
+3. **On Jetson**: Start the RAG server
+4. **On Jetson**: Run the main coordinator
+
+For detailed setup instructions: [NETWORK_SETUP.md](NETWORK_SETUP.md)
+
+---
+
 ## Setup
 
     git clone --recursive git@github.com:davesarmoury/PotatOS.git
