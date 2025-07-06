@@ -41,8 +41,15 @@ For detailed setup instructions: [NETWORK_SETUP.md](NETWORK_SETUP.md)
     ./patch_platformdetect.sh
     cd ..
 
-## LLM
+## LLM (Network Setup)
 
+With the new network configuration, Ollama runs on your powerful computer instead of Jetson:
+
+**On your computer:**
+- Run `start_ollama_server.bat` (Windows) or `start_ollama_server.sh` (Linux/Mac)
+- This will start Ollama with network access
+
+**Previous Jetson setup (deprecated):**
     jetson-containers run --name ollama $(autotag ollama)
     ollama run llama3.2:3b --keepalive 60m
 
@@ -51,9 +58,16 @@ For detailed setup instructions: [NETWORK_SETUP.md](NETWORK_SETUP.md)
     cd wiki_rag/
     pip3 install -r requirements.txt
 
+    # Choose one of the following RAG implementations:
+    
+    # Option 1: Simple Ollama-based RAG (Recommended)
+    python3 wiki_ollama.py
+    
+    # Option 2: LlamaIndex-based RAG (More advanced)
     #python3 wiki_llamaindex_preprocess.py
     #python3 wiki_llamaindex.py
-    python3 wiki_ollama.py
+
+Both implementations now connect to the network Ollama server configured in config.json
 
 ## Audio
 
