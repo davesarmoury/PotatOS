@@ -1,4 +1,5 @@
 import os.path
+import json
 from llama_index.core import (
     VectorStoreIndex,
     SimpleDirectoryReader,
@@ -15,7 +16,29 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS
 
-model_name = "llama3.2:3b"
+# Load configuration file
+def load_config():
+    config_path = "../config.json"
+    if os.path.exists(config_path):
+        with open(config_path, 'r') as f:
+            return json.load(f)
+    else:
+        # Default settings
+        return {
+            "ollama": {
+                "host": "192.168.1.100",
+                "port": 11434,
+                "model": "llama3.2:3b"
+            }
+        }
+
+config = load_config()
+
+# Ollama server settings
+OLLAMA_HOST = config["ollama"]["host"]
+OLLAMA_PORT = config["ollama"]["port"]
+model_name = config["ollama"]["model"]
+
 root_dir = "/home/davesarmoury/PotatOS/wiki_rag/"
 PERSIST_DIR = root_dir + "index_storage"
 KNOWLEDGE_DIR = root_dir + "glados_knowledge"
@@ -70,7 +93,9 @@ def main():
     global chat_engine
     print(color("Loading LLM...", bcolors.OKBLUE))
 
-    llm = Ollama(model=model_name, request_timeout=60.0)
+    # Configure Ollama with network host
+    ollama_url = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
+    llm = Ollama(model=model_name, request_timeout=60.0, base_url=ollama_url)
     memory = ChatMemoryBuffer.from_defaults(token_limit=1500, llm=llm)
 
     print(color("Loading Persona...", bcolors.OKBLUE))
@@ -79,12 +104,16 @@ def main():
     if not os.path.exists(PERSIST_DIR):
         print(color("Generating Index...", bcolors.OKBLUE))
         documents = SimpleDirectoryReader(KNOWLEDGE_DIR).load_data()
-        index = VectorStoreIndex.from_documents(documents, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
+        # Use network Ollama for embeddings too
+        embed_model = OllamaEmbedding(model_name=model_name, base_url=ollama_url)
+        index = VectorStoreIndex.from_documents(documents, llm=llm, embed_model=embed_model)
         index.storage_context.persist(persist_dir=PERSIST_DIR)
     else:
         print(color("Loading Index...", bcolors.OKBLUE))
         storage_context = StorageContext.from_defaults(persist_dir=PERSIST_DIR)
-        index = load_index_from_storage(storage_context, llm=llm, embed_model=OllamaEmbedding(model_name=model_name))
+        # Use network Ollama for embeddings when loading
+        embed_model = OllamaEmbedding(model_name=model_name, base_url=ollama_url)
+        index = load_index_from_storage(storage_context, llm=llm, embed_model=embed_model)
 
     chat_engine = index.as_chat_engine(
       chat_mode="context",
