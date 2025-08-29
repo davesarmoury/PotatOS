@@ -1,5 +1,7 @@
 # PotatOS
 
+[<img src="https://img.youtube.com/vi/Dz95q6XYjwY/0.jpg">](https://youtu.be/Dz95q6XYjwY)
+
 ## Setup
 
     git clone --recursive git@github.com:davesarmoury/PotatOS.git
